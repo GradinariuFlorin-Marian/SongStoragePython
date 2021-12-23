@@ -1,34 +1,42 @@
 import wx
 from Interface import SongsManager
+from Interface import Playlists
+from Interface import Songs
 
 
 class InterfaceManager(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='Song Storage')
+        # Will create the interface
+        super().__init__(parent=None, title='Song Storage', size=(410, 335))
         panel = wx.Panel(self)
-        my_sizer = wx.BoxSizer(wx.VERTICAL)
+        # Will set the set of the interface
+        self.SetMaxSize(wx.Size(410, 335))
+        self.SetMinSize(wx.Size(410, 335))
 
-        my_btn = wx.Button(panel, label='Songs')
-        my_btn.Bind(wx.EVT_BUTTON, self.on_presssongs)
-        my_sizer.Add(my_btn, 0, wx.ALL | wx.CENTER, 5)
+        songs = wx.Button(panel, label='Songs', size=(80, 15), pos=(150, 80))
+        songs.Bind(wx.EVT_BUTTON, self.on_presssongs)
 
-        my_btn = wx.Button(panel, label='Playlists')
-        my_btn.Bind(wx.EVT_BUTTON, self.on_pressplaylists)
-        my_sizer.Add(my_btn, 0, wx.ALL | wx.CENTER, 5)
+        playlists = wx.Button(panel, label='Playlists', size=(80, 15), pos=(150, 120))
+        playlists.Bind(wx.EVT_BUTTON, self.on_pressplaylists)
 
-        my_btn = wx.Button(panel, label='Songs Manager')
-        my_btn.Bind(wx.EVT_BUTTON, self.on_presssongsmanager)
-        my_sizer.Add(my_btn, 0, wx.ALL | wx.CENTER, 5)
-        panel.SetSizer(my_sizer)
+        songsmanager = wx.Button(panel, label='Songs Manager', size=(110, 15), pos=(140, 160))
+        songsmanager.Bind(wx.EVT_BUTTON, self.on_presssongsmanager)
+
+        close = wx.Button(panel, label='Close', size=(80, 15), pos=(150, 210))
+        close.Bind(wx.EVT_BUTTON, self.on_pressclose)
+
         self.SetBackgroundColour('#0000ff')
         self.Show()
 
     def on_presssongs(self, event):
-         print('Songs')
+        Songs.songs()
 
     def on_pressplaylists(self, event):
-        print('Playlists')
+        Playlists.playlists()
 
     def on_presssongsmanager(self, event):
-        self.Hide()
+        self.Close()
         SongsManager.songsmanager()
+
+    def on_pressclose(self, event):
+        self.Close()
