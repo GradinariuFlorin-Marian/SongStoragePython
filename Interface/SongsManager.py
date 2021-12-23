@@ -38,7 +38,7 @@ class songsmanager(wx.Frame):
         back.Bind(wx.EVT_BUTTON, self.buttonback)
 
         panel.SetSizer(my_sizer)
-        self.SetBackgroundColour('#ffffff')
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()
 
     def on_edit(self, event):
@@ -50,3 +50,18 @@ class songsmanager(wx.Frame):
     def buttonback(self, event):
         self.Close()
         MainPage.InterfaceManager()
+
+    def OnEraseBackground(self, evt):
+        """
+        Add a picture to the background
+        """
+        # yanked from ColourDB.py
+        dc = evt.GetDC()
+
+        if not dc:
+            dc = wx.ClientDC(self)
+            rect = self.GetUpdateRegion().GetBox()
+            dc.SetClippingRect(rect)
+        dc.Clear()
+        bmp = wx.Bitmap("background2.jpg")
+        dc.DrawBitmap(bmp, 0, 0)

@@ -24,14 +24,16 @@ class InterfaceManager(wx.Frame):
 
         close = wx.Button(panel, label='Close', size=(80, 15), pos=(150, 210))
         close.Bind(wx.EVT_BUTTON, self.on_pressclose)
-
-        self.SetBackgroundColour('#0000ff')
+        #This part will add background picture to the panel
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()
 
     def on_presssongs(self, event):
+        self.Close()
         Songs.songs()
 
     def on_pressplaylists(self, event):
+        self.Close()
         Playlists.playlists()
 
     def on_presssongsmanager(self, event):
@@ -40,3 +42,18 @@ class InterfaceManager(wx.Frame):
 
     def on_pressclose(self, event):
         self.Close()
+
+    def OnEraseBackground(self, evt):
+        """
+        Add a picture to the background
+        """
+        # yanked from ColourDB.py
+        dc = evt.GetDC()
+
+        if not dc:
+            dc = wx.ClientDC(self)
+            rect = self.GetUpdateRegion().GetBox()
+            dc.SetClippingRect(rect)
+        dc.Clear()
+        bmp = wx.Bitmap("background.jpg")
+        dc.DrawBitmap(bmp, 0, 0)
