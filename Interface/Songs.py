@@ -43,6 +43,15 @@ class songs(wx.Frame):
         back = wx.Button(self, label='Back', size=(80, 15), pos=(210, 260))
         back.Bind(wx.EVT_BUTTON, self.buttonback)
 
+        edit = wx.Button(self, label='Search', size=(60, 15), pos=(290, 220))
+        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+
+        edit = wx.Button(self, label='Reset', size=(60, 15), pos=(365, 220))
+        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+
+        edit = wx.TextCtrl(self, size=(200, 20), pos=(80, 217))
+        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+
         panel.SetSizer(my_sizer)
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()

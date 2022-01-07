@@ -1,5 +1,7 @@
 import wx
 from Interface import MainPage
+from Interface import PlaylistCreator
+from Interface import PlaylistEditor
 
 
 class playlists(wx.Frame):
@@ -24,10 +26,10 @@ class playlists(wx.Frame):
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
         addsong = wx.Button(self, label='Add playlist', size=(100, 15), pos=(80, 180))
-        addsong.Bind(wx.EVT_BUTTON, self.on_edit)
+        addsong.Bind(wx.EVT_BUTTON, self.buttonadd)
 
         edit = wx.Button(self, label='Edit playlist', size=(100, 15), pos=(200, 180))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        edit.Bind(wx.EVT_BUTTON, self.buttonedit)
 
         edit = wx.Button(self, label='Remove playlist', size=(120, 15), pos=(320, 180))
         edit.Bind(wx.EVT_BUTTON, self.on_edit)
@@ -44,6 +46,14 @@ class playlists(wx.Frame):
 
     def update_mp3_listing(self, folder_path):
         print(folder_path)
+
+    def buttonadd(self, event):
+        self.Close()
+        PlaylistCreator.playlistcreator()
+
+    def buttonedit(self, event):
+        self.Close()
+        PlaylistEditor.playlisteditor(15, "NewPlaylist", "This is a playlist!")
 
     def buttonback(self, event):
         self.Close()
