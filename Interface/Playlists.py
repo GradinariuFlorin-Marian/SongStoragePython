@@ -6,7 +6,7 @@ from Interface import PlaylistEditor
 
 class playlists(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='Songs', size=(550, 335))
+        super().__init__(parent=None, title='Playlists', size=(550, 335))
         panel = wx.Panel(self)
 
         # Will set the set of the interface

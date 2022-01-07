@@ -4,7 +4,7 @@ from Interface import Playlists
 
 class playlistcreator(wx.Frame):
     def __init__(self):
-        super().__init__(parent=None, title='Songs', size=(410, 335))
+        super().__init__(parent=None, title='Playlist Creator', size=(410, 335))
         panel = wx.Panel(self)
 
         self.SetMaxSize(wx.Size(410, 335))

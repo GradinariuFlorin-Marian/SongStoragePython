@@ -1,4 +1,5 @@
 import wx
+import eyed3
 from Interface import MainPage
 
 
@@ -17,11 +18,10 @@ class songs(wx.Frame):
             self, size=(550, 150),
             style=wx.LC_REPORT | wx.BORDER_SUNKEN
         )
-
-        self.list_ctrl.InsertColumn(0, 'Artist', width=150)
-        self.list_ctrl.InsertColumn(1, 'Album', width=90)
-        self.list_ctrl.InsertColumn(2, 'Title', width=150)
-        self.list_ctrl.InsertColumn(3, 'Type', width=80)
+        self.list_ctrl.InsertColumn(0, 'ID', width=50)
+        self.list_ctrl.InsertColumn(1, 'Artist', width=200)
+        self.list_ctrl.InsertColumn(2, 'Album', width=150)
+        self.list_ctrl.InsertColumn(3, 'Title', width=150)
 
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 

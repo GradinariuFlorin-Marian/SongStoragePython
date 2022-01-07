@@ -1,22 +1,31 @@
 import wx
-from Interface import Playlists
+import eyed3
+from Interface import SongsManager
 
 
-class playlisteditor(wx.Frame):
-    def __init__(self, id, nameV, descriptionV):
-        super().__init__(parent=None, title='Playlist Editor', size=(410, 335))
+class songeditor(wx.Frame):
+    def __init__(self, id, artistV, albumV, titleV):
+        super().__init__(parent=None, title='Song Editor', size=(410, 360))
         panel = wx.Panel(self)
 
         self.SetMaxSize(wx.Size(410, 335))
         self.SetMinSize(wx.Size(410, 335))
 
-        name = wx.StaticText(self, -1, "Playlist name:", size=(50, 15), pos=(170, 40))
-        tname = wx.TextCtrl(self, size=(200, 23), pos=(120, 70))
-        tname.write(nameV)
+        artist = wx.StaticText(self, -1, "Artist:", size=(50, 15), pos=(190, 20))
+        tartist = wx.TextCtrl(self, size=(200, 23), pos=(120, 40))
+        tartist.write(artistV)
 
-        description = wx.StaticText(self, -1, "Playlist description:", size=(50, 15), pos=(160, 110))
-        edit = wx.TextCtrl(self, size=(200, 60), pos=(120, 140))
-        edit.write(descriptionV)
+        album = wx.StaticText(self, -1, "Album:", size=(50, 15), pos=(190, 70))
+        talbum = wx.TextCtrl(self, size=(200, 23), pos=(120, 90))
+        talbum.write(albumV)
+
+        title = wx.StaticText(self, -1, "Title:", size=(50, 15), pos=(190, 120))
+        ttitle = wx.TextCtrl(self, size=(200, 23), pos=(120, 140))
+        ttitle.write(titleV)
+
+        type = wx.StaticText(self, -1, "Type:", size=(50, 15), pos=(190, 170))
+        ttype = wx.TextCtrl(self, size=(200, 23), pos=(120, 190))
+        ttype.write(typeV)
 
         create = wx.Button(self, label='Edit', size=(80, 15), pos=(180, 230))
         create.Bind(wx.EVT_BUTTON, self.buttonedit)
@@ -27,8 +36,6 @@ class playlisteditor(wx.Frame):
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()
 
-    def on_edit(self, event):
-        print('in on_edit')
 
     def update_mp3_listing(self, folder_path):
         print(folder_path)
@@ -36,11 +43,11 @@ class playlisteditor(wx.Frame):
     def buttonedit(self, event):
         self.Close()
         # Add in database
-        Playlists.playlists()
+        SongsManager.songsmanager()
 
     def buttonback(self, event):
         self.Close()
-        Playlists.playlists()
+        SongsManager.songsmanager()
 
     def OnEraseBackground(self, evt):
         """
