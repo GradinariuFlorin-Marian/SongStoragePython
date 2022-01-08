@@ -20,8 +20,8 @@ class playlists(wx.Frame):
             style=wx.LC_REPORT | wx.BORDER_SUNKEN
         )
 
-        self.list_ctrl.InsertColumn(0, 'Playlist', width=150)
-        self.list_ctrl.InsertColumn(1, 'Details', width=90)
+        self.list_ctrl.InsertColumn(0, 'Playlist', width=275)
+        self.list_ctrl.InsertColumn(1, 'Details', width=275)
 
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 

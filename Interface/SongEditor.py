@@ -15,17 +15,13 @@ class songeditor(wx.Frame):
         tartist = wx.TextCtrl(self, size=(200, 23), pos=(120, 40))
         tartist.write(artistV)
 
-        album = wx.StaticText(self, -1, "Album:", size=(50, 15), pos=(190, 70))
-        talbum = wx.TextCtrl(self, size=(200, 23), pos=(120, 90))
+        album = wx.StaticText(self, -1, "Album:", size=(50, 15), pos=(190, 90))
+        talbum = wx.TextCtrl(self, size=(200, 23), pos=(120, 110))
         talbum.write(albumV)
 
-        title = wx.StaticText(self, -1, "Title:", size=(50, 15), pos=(190, 120))
-        ttitle = wx.TextCtrl(self, size=(200, 23), pos=(120, 140))
+        title = wx.StaticText(self, -1, "Title:", size=(50, 15), pos=(200, 160))
+        ttitle = wx.TextCtrl(self, size=(200, 23), pos=(120, 180))
         ttitle.write(titleV)
-
-        type = wx.StaticText(self, -1, "Type:", size=(50, 15), pos=(190, 170))
-        ttype = wx.TextCtrl(self, size=(200, 23), pos=(120, 190))
-        ttype.write(typeV)
 
         create = wx.Button(self, label='Edit', size=(80, 15), pos=(180, 230))
         create.Bind(wx.EVT_BUTTON, self.buttonedit)

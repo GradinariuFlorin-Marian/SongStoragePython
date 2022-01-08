@@ -1,4 +1,6 @@
 import wx
+from tkinter import filedialog as fd
+import eyed3
 from Interface import MainPage
 from Interface import SongEditor
 
@@ -27,7 +29,7 @@ class songsmanager(wx.Frame):
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
         addsong = wx.Button(self, label='Add Song', size=(80, 15), pos=(90, 170))
-        addsong.Bind(wx.EVT_BUTTON, self.on_edit)
+        addsong.Bind(wx.EVT_BUTTON, self.buttonadd)
 
         edit = wx.Button(self, label='Edit', size=(80, 15), pos=(210, 170))
         edit.Bind(wx.EVT_BUTTON, self.buttonedit)
@@ -47,6 +49,10 @@ class songsmanager(wx.Frame):
 
     def update_mp3_listing(self, folder_path):
         print(folder_path)
+
+    def buttonadd(self, event):
+        filename = fd.askopenfilename()
+        print(filename)
 
     def buttonedit(self, event):
         self.Close()
