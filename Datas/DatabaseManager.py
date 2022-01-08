@@ -44,10 +44,17 @@ class DatabaseManager:
         mycursor.execute(sql, val)
         db.commit()
 
-    def update_song(self, db, artist, album, title, id):
+    def update_song(self, db, artist, album, title, idsong):
         mycursor = db.cursor()
         sql = "UPDATE songs SET artist = %s, album = %s, title = %s WHERE id=%s"
-        val = (artist, album, title, id)
+        val = (artist, album, title, idsong)
+        mycursor.execute(sql, val)
+        db.commit()
+
+    def search_songs(self, db, title):
+        mycursor = db.cursor()
+        sql = "SELECT id FROM songs WHERE title LIKE '%%s%'"
+        val = title
         mycursor.execute(sql, val)
         db.commit()
 
@@ -56,15 +63,23 @@ class DatabaseManager:
 
         db.close()
 
-    def update_playlists(self, db):
-        db = self.connect_database()
+    def update_playlist(self, db, oldname, name, description):
+        mycursor = db.cursor()
+        sql = "UPDATE playlists SET name = %s, description = %s WHERE name=%s"
+        val = (name, description, oldname)
+        mycursor.execute(sql, val)
+        sql2 = "RENAME TABLE " + oldname + " TO " + name
+        mycursor.execute(sql2)
+        db.commit()
 
-        db.close()
-
-    def create_playlist(self, db):
-        db = self.connect_database()
-
-        db.close()
+    def create_playlist(self, db, name, description):
+        mycursor = db.cursor()
+        sql = "CREATE TABLE IF NOT EXISTS " + name + " (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, idsong INT)"
+        mycursor.execute(sql)
+        sql2 = "INSERT INTO playlists (name, description) VALUES (%s, %s)"
+        val2 = (name, description)
+        mycursor.execute(sql2, val2)
+        db.commit()
 
     def remove_playlist(self):
         db = self.connect_database()
