@@ -44,6 +44,13 @@ class DatabaseManager:
         mycursor.execute(sql, val)
         db.commit()
 
+    def update_song(self, db, artist, album, title, id):
+        mycursor = db.cursor()
+        sql = "UPDATE songs SET artist = %s, album = %s, title = %s WHERE id=%s"
+        val = (artist, album, title, id)
+        mycursor.execute(sql, val)
+        db.commit()
+
     def get_playlists(self, db):
         db = self.connect_database()
 
