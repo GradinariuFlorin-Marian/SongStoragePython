@@ -1,8 +1,10 @@
 import wx
-from tkinter import filedialog as fd
+from tkinter import *
+from tkinter import filedialog
 import eyed3
 from Interface import MainPage
 from Interface import SongEditor
+from Datas import DatabaseManager
 
 
 class songsmanager(wx.Frame):
@@ -10,11 +12,14 @@ class songsmanager(wx.Frame):
         super().__init__(parent=None, title='Songs Manager', size=(550, 335))
         panel = wx.Panel(self)
 
-         # Will set the set of the interface
+        # Will set the set of the interface
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
-        self.row_obj_dict = {}
         my_sizer = wx.BoxSizer(wx.VERTICAL)
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        slist = db.get_songs(database)
+        database.close()
 
         self.list_ctrl = wx.ListCtrl(
             self, size=(550, 150),
@@ -26,6 +31,16 @@ class songsmanager(wx.Frame):
         self.list_ctrl.InsertColumn(2, 'Album', width=150)
         self.list_ctrl.InsertColumn(3, 'Title', width=150)
 
+        items = slist
+        index = 0
+        for idV, artist, album, title in items:
+            self.list_ctrl.InsertItem(index, str(idV))
+            self.list_ctrl.SetItem(index, 1, artist)
+            self.list_ctrl.SetItem(index, 2, album)
+            self.list_ctrl.SetItem(index, 3, title)
+            self.list_ctrl.SetItemData(index, idV)
+            index += 1
+
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
         addsong = wx.Button(self, label='Add Song', size=(80, 15), pos=(90, 170))
@@ -35,7 +50,7 @@ class songsmanager(wx.Frame):
         edit.Bind(wx.EVT_BUTTON, self.buttonedit)
 
         edit = wx.Button(self, label='Remove Song', size=(110, 15), pos=(330, 170))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        edit.Bind(wx.EVT_BUTTON, self.buttonremove)
 
         back = wx.Button(self, label='Back', size=(80, 15), pos=(210, 260))
         back.Bind(wx.EVT_BUTTON, self.buttonback)
@@ -44,19 +59,29 @@ class songsmanager(wx.Frame):
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()
 
-    def on_edit(self, event):
-        print('in on_edit')
-
-    def update_mp3_listing(self, folder_path):
-        print(folder_path)
-
     def buttonadd(self, event):
-        filename = fd.askopenfilename()
-        print(filename)
+        root = Tk()
+
+        root.filename = filedialog.askopenfilename(initialdir="/", title="Select file")
+        print(root.filename)
+
+        root.mainloop()
+
+    def buttonremove(self, event):
+        if self.list_ctrl.GetFocusedItem() != -1:
+            item = self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem())
+            db = DatabaseManager.DatabaseManager()
+            database = db.connect_database()
+            db.remove_song(database, item)
+            self.list_ctrl.DeleteItem(self.list_ctrl.GetFocusedItem())
 
     def buttonedit(self, event):
-        self.Close()
-        SongEditor.songeditor(1, "Rihanna", "-", "No way");
+        if self.list_ctrl.GetFocusedItem() != -1:
+            self.Close()
+            SongEditor.songeditor(self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem()),
+                                  self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem(), 1),
+                                  self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem(), 2),
+                                  self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem(), 3))
 
     def buttonback(self, event):
         self.Close()

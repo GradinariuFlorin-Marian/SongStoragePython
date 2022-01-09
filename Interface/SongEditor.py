@@ -1,6 +1,7 @@
 import wx
 import eyed3
 from Interface import SongsManager
+from Datas import DatabaseManager
 
 
 class songeditor(wx.Frame):
@@ -10,18 +11,18 @@ class songeditor(wx.Frame):
 
         self.SetMaxSize(wx.Size(410, 335))
         self.SetMinSize(wx.Size(410, 335))
+        self.id=id
+        wx.StaticText(self, -1, "Artist:", size=(50, 15), pos=(190, 20))
+        self.tartist = wx.TextCtrl(self, size=(200, 23), pos=(120, 40))
+        self.tartist.write(artistV)
 
-        artist = wx.StaticText(self, -1, "Artist:", size=(50, 15), pos=(190, 20))
-        tartist = wx.TextCtrl(self, size=(200, 23), pos=(120, 40))
-        tartist.write(artistV)
+        wx.StaticText(self, -1, "Album:", size=(50, 15), pos=(190, 90))
+        self.talbum = wx.TextCtrl(self, size=(200, 23), pos=(120, 110))
+        self.talbum.write(albumV)
 
-        album = wx.StaticText(self, -1, "Album:", size=(50, 15), pos=(190, 90))
-        talbum = wx.TextCtrl(self, size=(200, 23), pos=(120, 110))
-        talbum.write(albumV)
-
-        title = wx.StaticText(self, -1, "Title:", size=(50, 15), pos=(200, 160))
-        ttitle = wx.TextCtrl(self, size=(200, 23), pos=(120, 180))
-        ttitle.write(titleV)
+        wx.StaticText(self, -1, "Title:", size=(50, 15), pos=(200, 160))
+        self.ttitle = wx.TextCtrl(self, size=(200, 23), pos=(120, 180))
+        self.ttitle.write(titleV)
 
         create = wx.Button(self, label='Edit', size=(80, 15), pos=(180, 230))
         create.Bind(wx.EVT_BUTTON, self.buttonedit)
@@ -33,12 +34,11 @@ class songeditor(wx.Frame):
         self.Show()
 
 
-    def update_mp3_listing(self, folder_path):
-        print(folder_path)
-
     def buttonedit(self, event):
         self.Close()
-        # Add in database
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        db.update_song(database, self.tartist.GetValue(), self.talbum.GetValue(), self.ttitle.GetValue(), self.id)
         SongsManager.songsmanager()
 
     def buttonback(self, event):

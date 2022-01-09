@@ -1,5 +1,6 @@
 import wx
 from Interface import Playlists
+from Datas import DatabaseManager
 
 
 class playlistcreator(wx.Frame):
@@ -10,14 +11,12 @@ class playlistcreator(wx.Frame):
         self.SetMaxSize(wx.Size(410, 335))
         self.SetMinSize(wx.Size(410, 335))
 
-        name = wx.StaticText(self, -1, "Playlist name:", size=(50, 15), pos=(170, 40))
-        edit = wx.TextCtrl(self, size=(200, 20), pos=(120, 70))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        wx.StaticText(self, -1, "Playlist name:", size=(50, 15), pos=(170, 40))
+        self.name = wx.TextCtrl(self, size=(200, 20), pos=(120, 70))
 
 
-        description = wx.StaticText(self, -1, "Playlist description:", size=(50, 15), pos=(160, 110))
-        edit = wx.TextCtrl(self, size=(200, 60), pos=(120, 140))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        wx.StaticText(self, -1, "Playlist description:", size=(50, 15), pos=(160, 110))
+        self.edit = wx.TextCtrl(self, size=(200, 60), pos=(120, 140))
 
         create = wx.Button(self, label='Create', size=(80, 15), pos=(180, 230))
         create.Bind(wx.EVT_BUTTON, self.buttoncreate)
@@ -28,15 +27,11 @@ class playlistcreator(wx.Frame):
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()
 
-    def on_edit(self, event):
-        print('in on_edit')
-
-    def update_mp3_listing(self, folder_path):
-        print(folder_path)
-
     def buttoncreate(self, event):
         self.Close()
-        #Add in database
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        db.create_playlist(database, self.name.GetValue(), self.edit.GetValue())
         Playlists.playlists()
 
     def buttonback(self, event):
