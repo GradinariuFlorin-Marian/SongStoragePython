@@ -40,7 +40,6 @@ class songeditor(wx.Frame):
         database = db.connect_database()
         db.update_song(database, self.tartist.GetValue(), self.talbum.GetValue(), self.ttitle.GetValue(), self.id)
         db.insert_Log(database, "Updated song: " + str(self.id))
-        database.Close()
         SongsManager.songsmanager()
 
     def buttonback(self, event):

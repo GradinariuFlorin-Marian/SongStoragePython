@@ -28,11 +28,12 @@ class playlistcreator(wx.Frame):
         self.Show()
 
     def buttoncreate(self, event):
-        self.Close()
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
-        db.create_playlist(database, self.name.GetValue(), self.edit.GetValue())
-        Playlists.playlists()
+        value = db.create_playlist(database, self.name.GetValue(), self.edit.GetValue())
+        if value:
+            self.Close()
+            Playlists.playlists()
 
     def buttonback(self, event):
         self.Close()

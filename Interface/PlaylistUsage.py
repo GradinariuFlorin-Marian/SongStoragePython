@@ -126,7 +126,6 @@ class playlistusage(wx.Frame):
         # Will add new values to list
         if len(slist[0]) >= 1:
             for x in slist:
-                print(str(x[0][0]) +" " + str(x[0]))
                 self.list_ctrl.InsertItem(self.index, str(x[0][0]))
                 self.list_ctrl.SetItem(self.index, 1, str(x[0][1]))
                 self.list_ctrl.SetItem(self.index, 2, str(x[0][2]))

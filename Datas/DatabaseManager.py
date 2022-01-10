@@ -151,12 +151,18 @@ class DatabaseManager:
 
     def update_playlist(self, db, oldname, name, description):
         mycursor = db.cursor()
-        sql = "UPDATE playlists SET name = %s, description = %s WHERE name=%s"
-        val = (name, description, oldname)
-        mycursor.execute(sql, val)
-        sql2 = "RENAME TABLE " + oldname + " TO " + name
-        mycursor.execute(sql2)
-        db.commit()
+        if oldname != name:
+            sql = "UPDATE playlists SET name = %s, description = %s WHERE name=%s"
+            val = (name, description, oldname)
+            mycursor.execute(sql, val)
+            sql2 = "RENAME TABLE " + oldname + " TO " + name
+            mycursor.execute(sql2)
+            db.commit()
+        else:
+            sql = "UPDATE playlists SET description = %s WHERE name=%s"
+            val = (description, oldname)
+            mycursor.execute(sql, val)
+            db.commit()
 
     def create_playlist(self, db, name, description):
         """
@@ -164,12 +170,17 @@ class DatabaseManager:
         table for the playlist where we will get in the future all the songs
         """
         mycursor = db.cursor()
-        sql = "CREATE TABLE IF NOT EXISTS " + name + " (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, idsong INT)"
-        mycursor.execute(sql)
-        sql2 = "INSERT INTO playlists (name, description) VALUES (%s, %s)"
-        val2 = (name, description)
-        mycursor.execute(sql2, val2)
-        db.commit()
+        mycursor.execute("SELECT name FROM playlists WHERE name='" + name + "'")
+        if len(mycursor.fetchall()) <1:
+            sql = "CREATE TABLE IF NOT EXISTS " + name + " (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, idsong INT)"
+            mycursor.execute(sql)
+            sql2 = "INSERT INTO playlists (name, description) VALUES (%s, %s)"
+            val2 = (name, description)
+            mycursor.execute(sql2, val2)
+            db.commit()
+            return True
+        else:
+            return False
 
     def remove_playlist(self, db, namep):
         mycursor = db.cursor()
