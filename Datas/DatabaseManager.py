@@ -8,7 +8,7 @@ class DatabaseManager:
         This function will verify if the tables are created, and if not will create the missing tables.
         """
         db.cursor().execute(
-            "CREATE TABLE IF NOT EXISTS songs (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, artist VARCHAR(256), album VARCHAR(256), title VARCHAR(256), path VARCHAR(512))")
+            "CREATE TABLE IF NOT EXISTS songs (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, artist VARCHAR(256), album VARCHAR(256), title VARCHAR(256), path VARCHAR(512), rdate VARCHAR(128))")
         db.cursor().execute(
             "CREATE TABLE IF NOT EXISTS playlists (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, name VARCHAR(256) UNIQUE, description VARCHAR(256))")
         db.cursor().execute(
@@ -58,10 +58,13 @@ class DatabaseManager:
         mylist = []
         # This part will use all the id's found in playlists table and get the songs metadata's from the songs table
         for x in mycursor.fetchall():
-            mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id=" + str(
-                x[0]) + " AND " + type + " LIKE '%" + value + "%'")
-            mylist.append(mycursor.fetchall())
-
+            print(str(x[0]) + " " + type + " " + value)
+            mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id='" +
+                             str(x[0]) + "' AND " + type + " LIKE '%" + value + "%'")
+            # This part will filter empty lists
+            data = mycursor.fetchall()
+            if len(data) >= 1:
+                mylist.append(data)
         return mylist
 
     def get_path(self, db, idsong):
@@ -74,14 +77,14 @@ class DatabaseManager:
 
         return mycursor.fetchall()
 
-    def add_song(self, db, artist, album, title, path):
+    def add_song(self, db, artist, album, title, path, rdate):
         """
         This function is used to add the song with metadata's in the database and will return the id of the song
         after it was added
         """
         mycursor = db.cursor()
-        sql = "INSERT INTO songs (artist, album, title, path) VALUES (%s, %s, %s, %s)"
-        val = (artist, album, title, path)
+        sql = "INSERT INTO songs (artist, album, title, path, rdate) VALUES (%s, %s, %s, %s, %s)"
+        val = (artist, album, title, path, rdate)
         mycursor.execute(sql, val)
         db.commit()
 

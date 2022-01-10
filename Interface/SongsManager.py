@@ -74,7 +74,7 @@ class songsmanager(wx.Frame):
             tag = id3.Tag()
             tag.parse(path)
             # a = load(path) tag-uri speciale
-            idsong = db.add_song(database, tag.artist, tag.album, tag.title, path)
+            idsong = db.add_song(database, tag.artist, tag.album, tag.title, path, tag.release_date)
             db.insert_Log(database, "Added song ID:" + str(idsong[0][0]))
             database.close()
             # Will add new value to the list

@@ -1,7 +1,7 @@
 import wx
 from pygame import mixer
+from Interface import Playlists
 from Interface import PlaylistAdder
-from Interface import MainPage
 from Datas import DatabaseManager
 
 
@@ -126,6 +126,7 @@ class playlistusage(wx.Frame):
         # Will add new values to list
         if len(slist[0]) >= 1:
             for x in slist:
+                print(str(x[0][0]) +" " + str(x[0]))
                 self.list_ctrl.InsertItem(self.index, str(x[0][0]))
                 self.list_ctrl.SetItem(self.index, 1, str(x[0][1]))
                 self.list_ctrl.SetItem(self.index, 2, str(x[0][2]))
@@ -165,7 +166,7 @@ class playlistusage(wx.Frame):
     def buttonback(self, event):
         mixer.music.stop()
         self.Close()
-        MainPage.InterfaceManager()
+        Playlists.playlists()
 
     def remove(self, event):
         if self.list_ctrl.GetFocusedItem() != -1:
