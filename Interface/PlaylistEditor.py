@@ -35,6 +35,7 @@ class playlisteditor(wx.Frame):
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
         db.update_playlist(database, self.oldname, self.tname.GetValue(), self.edit.GetValue())
+        db.insert_Log(database, "Updated playlist: " + self.tname.GetValue())
         Playlists.playlists()
 
     def buttonback(self, event):

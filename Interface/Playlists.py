@@ -2,6 +2,7 @@ import wx
 from Interface import MainPage
 from Interface import PlaylistCreator
 from Interface import PlaylistEditor
+from Interface import PlaylistUsage
 from Datas import DatabaseManager
 
 
@@ -13,11 +14,14 @@ class playlists(wx.Frame):
         # Will set the set of the interface
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
+
         my_sizer = wx.BoxSizer(wx.VERTICAL)
+
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
         plists = db.get_playlists(database)
         database.close()
+
         self.list_ctrl = wx.ListCtrl(
             self, size=(550, 150),
             style=wx.LC_REPORT | wx.BORDER_SUNKEN
@@ -28,6 +32,7 @@ class playlists(wx.Frame):
 
         items = plists
         index = 0
+
         for idV, name, description in items:
             self.list_ctrl.InsertItem(index, name)
             self.list_ctrl.SetItem(index, 1, description)
@@ -36,14 +41,17 @@ class playlists(wx.Frame):
 
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
-        addsong = wx.Button(self, label='Add playlist', size=(100, 15), pos=(80, 180))
-        addsong.Bind(wx.EVT_BUTTON, self.buttonadd)
+        add = wx.Button(self, label='Add playlist', size=(100, 15), pos=(80, 180))
+        add.Bind(wx.EVT_BUTTON, self.buttonadd)
 
         edit = wx.Button(self, label='Edit playlist', size=(100, 15), pos=(200, 180))
         edit.Bind(wx.EVT_BUTTON, self.buttonedit)
 
-        edit = wx.Button(self, label='Remove playlist', size=(120, 15), pos=(320, 180))
-        edit.Bind(wx.EVT_BUTTON, self.buttonremove)
+        remove = wx.Button(self, label='Remove playlist', size=(120, 15), pos=(320, 180))
+        remove.Bind(wx.EVT_BUTTON, self.buttonremove)
+
+        openb = wx.Button(self, label='Open', size=(100, 15), pos=(200, 220))
+        openb.Bind(wx.EVT_BUTTON, self.buttonopen)
 
         back = wx.Button(self, label='Back', size=(80, 15), pos=(210, 260))
         back.Bind(wx.EVT_BUTTON, self.buttonback)
@@ -52,21 +60,21 @@ class playlists(wx.Frame):
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
         self.Show()
 
-    def on_edit(self, event):
-        print('in on_edit')
-
-    def update_mp3_listing(self, folder_path):
-        print(folder_path)
-
     def buttonadd(self, event):
         self.Close()
         PlaylistCreator.playlistcreator()
+
+    def buttonopen(self, event):
+        if self.list_ctrl.GetFocusedItem() != -1:
+            self.Close()
+            PlaylistUsage.playlistusage(self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem()))
 
     def buttonremove(self, event):
         if self.list_ctrl.GetFocusedItem() != -1:
             item = self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem())
             db = DatabaseManager.DatabaseManager()
             database = db.connect_database()
+            db.insert_Log(database, "Removed playlist: " + item)
             db.remove_playlist(database, item)
             self.list_ctrl.DeleteItem(self.list_ctrl.GetFocusedItem())
             database.close()
@@ -76,7 +84,6 @@ class playlists(wx.Frame):
         print(item2)
 
     def buttonedit(self, event):
-        # Termina descriptia
         if self.list_ctrl.GetFocusedItem() != -1:
             self.Close()
             PlaylistEditor.playlisteditor(self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem()),

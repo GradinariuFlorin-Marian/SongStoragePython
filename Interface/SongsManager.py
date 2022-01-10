@@ -60,7 +60,7 @@ class songsmanager(wx.Frame):
 
     def buttonadd(self, event):
         style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
-        dialog = wx.FileDialog(None, 'Open', style=style)  # adauga wildcard pt tag-uri .mp3 .wav etc
+        dialog = wx.FileDialog(None, 'Open', style=style)
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPath()
             db = DatabaseManager.DatabaseManager()
@@ -68,14 +68,15 @@ class songsmanager(wx.Frame):
             tag = id3.Tag()
             tag.parse(path)
             # a = load(path) tag-uri speciale
-            db.add_song(database, tag.artist, tag.album, tag.title, path)
+            idsong = db.add_song(database, tag.artist, tag.album, tag.title, path)
+            db.insert_Log(database, "Added song ID:" + str(idsong[0][0]))
             database.close()
-            # self.list_ctrl.InsertItem(self.index, str(idV))
-            # self.list_ctrl.SetItem(self.index, 1, tag.artist)
-            # self.list_ctrl.SetItem(self.index, 2, tag.album)
-            # self.list_ctrl.SetItem(self.index, 3, tag.title)
-            # self.list_ctrl.SetItemData(self.index, idV)
-            # self.index += 1
+            self.list_ctrl.InsertItem(self.index, str(idsong[0][0]))
+            self.list_ctrl.SetItem(self.index, 1, str(tag.artist))
+            self.list_ctrl.SetItem(self.index, 2, str(tag.album))
+            self.list_ctrl.SetItem(self.index, 3, str(tag.title))
+            self.list_ctrl.SetItemData(self.index, idsong[0][0])
+            self.index += 1
         dialog.Destroy()
 
     def buttonremove(self, event):
@@ -83,6 +84,7 @@ class songsmanager(wx.Frame):
             item = self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem())
             db = DatabaseManager.DatabaseManager()
             database = db.connect_database()
+            db.insert_Log(database, "Removed ID: " + item)
             db.remove_song(database, item)
             self.list_ctrl.DeleteItem(self.list_ctrl.GetFocusedItem())
 
