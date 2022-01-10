@@ -94,10 +94,13 @@ class DatabaseManager:
         This function is used to add id's of the songs into a specified paylist
         """
         mycursor = db.cursor()
-        sql = "INSERT INTO " + playlist + " (idsong) VALUES (%s)"
-        val = idsong
-        mycursor.execute(sql, val)
-        db.commit()
+        mycursor.execute("SELECT id FROM songs WHERE id='" + idsong + "'")
+        if len(mycursor.fetchall()) > 0:
+            sql = "INSERT INTO " + playlist + " (idsong) VALUES (" + idsong + ")"
+            mycursor.execute(sql)
+            db.commit()
+            return True
+        return False
 
     def remove_songplaylist(self, db, idsong, playlist):
         """

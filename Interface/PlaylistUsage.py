@@ -1,5 +1,6 @@
 import wx
 from pygame import mixer
+from Interface import PlaylistAdder
 from Interface import MainPage
 from Datas import DatabaseManager
 
@@ -177,6 +178,7 @@ class playlistusage(wx.Frame):
 
     def add(self, event):
         self.Close()
+        PlaylistAdder.playlistadder(self.pname)
 
     def OnEraseBackground(self, evt):
         """
