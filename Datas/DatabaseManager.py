@@ -42,8 +42,24 @@ class DatabaseManager:
         mylist = []
         # This part will use all the id's found in playlists table and get the songs metadata's from the songs table
         for x in mycursor.fetchall():
-            print(x[0])
             mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id=" + str(x[0]))
+            mylist.append(mycursor.fetchall())
+
+        return mylist
+
+    def search_songsplaylist(self, db, playlistname, value):
+        """
+        This function is used to get from the database based on a criteria the songs in a playlist
+        """
+        mycursor = db.cursor()
+
+        mycursor.execute("SELECT idsong FROM " + playlistname)
+
+        mylist = []
+        # This part will use all the id's found in playlists table and get the songs metadata's from the songs table
+        for x in mycursor.fetchall():
+            mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id=" + str(
+                x[0]) + " AND title LIKE '%" + value + "%'")
             mylist.append(mycursor.fetchall())
 
         return mylist
@@ -88,9 +104,8 @@ class DatabaseManager:
         This function is used to remove id's of the songs into a specified paylist
         """
         mycursor = db.cursor()
-        sql = "DELETE FROM " + playlist + " (idsong) VALUES (%s)"
-        val = idsong
-        mycursor.execute(sql, val)
+        sql = "DELETE FROM " + playlist + " WHERE idsong= " + idsong
+        mycursor.execute(sql)
         db.commit()
 
     def remove_song(self, db, idsong):

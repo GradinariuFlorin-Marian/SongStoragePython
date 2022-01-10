@@ -15,6 +15,7 @@ class playlistusage(wx.Frame):
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
         self.ispaused = False
+        self.pname = nameplaylist
         my_sizer = wx.BoxSizer(wx.VERTICAL)
 
         db = DatabaseManager.DatabaseManager()
@@ -34,14 +35,17 @@ class playlistusage(wx.Frame):
         # This part will populate our list with items
         self.index = 0
         for x in slist:
-            self.list_ctrl.InsertItem(self.index, str(x[self.index][0]))
-            self.list_ctrl.SetItem(self.index, 1, str(x[self.index][1]))
-            self.list_ctrl.SetItem(self.index, 2, str(x[self.index][2]))
-            self.list_ctrl.SetItem(self.index, 3, str(x[self.index][3]))
-            self.list_ctrl.SetItemData(self.index, x[self.index][0])
+            self.list_ctrl.InsertItem(self.index, str(x[0][0]))
+            self.list_ctrl.SetItem(self.index, 1, str(x[0][1]))
+            self.list_ctrl.SetItem(self.index, 2, str(x[0][2]))
+            self.list_ctrl.SetItem(self.index, 3, str(x[0][3]))
+            self.list_ctrl.SetItemData(self.index, x[0][0])
             self.index += 1
 
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
+
+        lastsong = wx.Button(self, label='Add', size=(50, 15), pos=(90, 180))
+        lastsong.Bind(wx.EVT_BUTTON, self.add)
 
         addsong = wx.Button(self, label='▶', size=(40, 15), pos=(160, 180))
         addsong.Bind(wx.EVT_BUTTON, self.play_song)
@@ -52,15 +56,19 @@ class playlistusage(wx.Frame):
         edit = wx.Button(self, label='⏹', size=(40, 15), pos=(300, 180))
         edit.Bind(wx.EVT_BUTTON, self.stop_song)
 
+        lastsong = wx.Button(self, label='Remove', size=(50, 15), pos=(370, 180))
+        lastsong.Bind(wx.EVT_BUTTON, self.remove)
+
         back = wx.Button(self, label='Back', size=(80, 15), pos=(210, 260))
         back.Bind(wx.EVT_BUTTON, self.buttonback)
 
-        add = wx.Button(self, label='Add', size=(70, 25), pos=(160, 220))
-        add.Bind(wx.EVT_BUTTON, self.add)
+        edit = wx.Button(self, label='Search', size=(60, 15), pos=(290, 220))
+        edit.Bind(wx.EVT_BUTTON, self.search)
 
-        remove = wx.Button(self, label='Remove', size=(70, 25), pos=(260, 220))
-        remove.Bind(wx.EVT_BUTTON, self.remove)
+        edit = wx.Button(self, label='Reset', size=(60, 15), pos=(365, 220))
+        edit.Bind(wx.EVT_BUTTON, self.reset)
 
+        self.textBox = wx.TextCtrl(self, size=(200, 20), pos=(80, 217))
         wx.StaticText(self, -1, "Status:", size=(50, 15), pos=(450, 175))
         self.status = wx.StaticText(self, -1, "Choosing", size=(50, 15), pos=(440, 195))
         font = wx.Font(18, wx.ROMAN, wx.SLANT, wx.LIGHT)
@@ -100,6 +108,48 @@ class playlistusage(wx.Frame):
                 db.insert_Log(database, "Paused ID " + self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem()))
                 database.close()
 
+    def search(self, event):
+        """
+        This function will help the user to search for their song based on textBox value
+        """
+        # Database operation to search value and add to logs that recording
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        slist = db.search_songsplaylist(database, self.pname, self.textBox.GetValue())
+        db.insert_Log(database, "Searched in playlist " + self.pname + ": " + self.textBox.GetValue())
+        database.close()
+        self.list_ctrl.DeleteAllItems()
+        self.index = 0
+        # Will add new values to list
+        if len(slist[0]) >= 1:
+            for x in slist:
+                self.list_ctrl.InsertItem(self.index, str(x[0][0]))
+                self.list_ctrl.SetItem(self.index, 1, str(x[0][1]))
+                self.list_ctrl.SetItem(self.index, 2, str(x[0][2]))
+                self.list_ctrl.SetItem(self.index, 3, str(x[0][3]))
+                self.list_ctrl.SetItemData(self.index, x[0][0])
+                self.index += 1
+
+    def reset(self, event):
+        """
+        Used to reset search result and to have back all the songs
+        """
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        slist = db.get_songsplaylist(database, self.pname)
+        db.insert_Log(database, "Reset Search")
+        database.close()
+        self.list_ctrl.DeleteAllItems()
+        self.textBox.SetValue("")
+        self.index = 0
+        for x in slist:
+            self.list_ctrl.InsertItem(self.index, str(x[0][0]))
+            self.list_ctrl.SetItem(self.index, 1, str(x[0][1]))
+            self.list_ctrl.SetItem(self.index, 2, str(x[0][2]))
+            self.list_ctrl.SetItem(self.index, 3, str(x[0][3]))
+            self.list_ctrl.SetItemData(self.index, x[0][0])
+            self.index += 1
+
     def stop_song(self, event):
         if self.list_ctrl.GetFocusedItem() != -1:
             mixer.music.pause()
@@ -115,7 +165,15 @@ class playlistusage(wx.Frame):
         MainPage.InterfaceManager()
 
     def remove(self, event):
-        self.Close()
+        if self.list_ctrl.GetFocusedItem() != -1:
+            # item variable is used to get the name of the focused item
+            item = self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem())
+            db = DatabaseManager.DatabaseManager()
+            database = db.connect_database()
+            db.insert_Log(database, "Removed ID: " + item)
+            db.remove_songplaylist(database, item, self.pname)
+            # This function will destroy the item from the list
+            self.list_ctrl.DeleteItem(self.list_ctrl.GetFocusedItem())
 
     def add(self, event):
         self.Close()
