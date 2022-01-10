@@ -7,7 +7,7 @@ class playlistcreator(wx.Frame):
     def __init__(self):
         super().__init__(parent=None, title='Playlist Creator', size=(410, 335))
         panel = wx.Panel(self)
-
+        # This part is used to set a specified size on the interface
         self.SetMaxSize(wx.Size(410, 335))
         self.SetMinSize(wx.Size(410, 335))
 

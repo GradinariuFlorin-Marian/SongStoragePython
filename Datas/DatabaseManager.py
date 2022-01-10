@@ -4,6 +4,9 @@ from datetime import datetime
 
 class DatabaseManager:
     def create_database(self, db):
+        """
+        This function will verify if the tables are created, and if not will create the missing tables.
+        """
         db.cursor().execute(
             "CREATE TABLE IF NOT EXISTS songs (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, artist VARCHAR(256), album VARCHAR(256), title VARCHAR(256), path VARCHAR(512))")
         db.cursor().execute(
@@ -12,6 +15,9 @@ class DatabaseManager:
             "CREATE TABLE IF NOT EXISTS logs (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, time DATE, description VARCHAR(256))")
 
     def connect_database(self):
+        """
+        This function will connect application to the database
+        """
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -34,7 +40,7 @@ class DatabaseManager:
         mycursor.execute("SELECT idsong FROM " + playlistname)
 
         mylist = []
-
+        # This part will use all the id's found in playlists table and get the songs metadata's from the songs table
         for x in mycursor.fetchall():
             print(x[0])
             mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id=" + str(x[0]))
@@ -43,6 +49,9 @@ class DatabaseManager:
         return mylist
 
     def get_path(self, db, idsong):
+        """
+        This function will return get the path of a specified song
+        """
         mycursor = db.cursor()
 
         mycursor.execute("SELECT path FROM songs WHERE id=" + idsong)
@@ -50,6 +59,10 @@ class DatabaseManager:
         return mycursor.fetchall()
 
     def add_song(self, db, artist, album, title, path):
+        """
+        This function is used to add the song with metadata's in the database and will return the id of the song
+        after it was added
+        """
         mycursor = db.cursor()
         sql = "INSERT INTO songs (artist, album, title, path) VALUES (%s, %s, %s, %s)"
         val = (artist, album, title, path)
@@ -61,6 +74,9 @@ class DatabaseManager:
         return mycursor.fetchall()
 
     def add_songplaylist(self, db, idsong, playlist):
+        """
+        This function is used to add id's of the songs into a specified paylist
+        """
         mycursor = db.cursor()
         sql = "INSERT INTO " + playlist + " (idsong) VALUES (%s)"
         val = idsong
@@ -68,6 +84,9 @@ class DatabaseManager:
         db.commit()
 
     def remove_songplaylist(self, db, idsong, playlist):
+        """
+        This function is used to remove id's of the songs into a specified paylist
+        """
         mycursor = db.cursor()
         sql = "DELETE FROM " + playlist + " (idsong) VALUES (%s)"
         val = idsong
@@ -111,6 +130,10 @@ class DatabaseManager:
         db.commit()
 
     def create_playlist(self, db, name, description):
+        """
+        This function is used to insert into the playlists table the new playlist created and will create a separate
+        table for the playlist where we will get in the future all the songs
+        """
         mycursor = db.cursor()
         sql = "CREATE TABLE IF NOT EXISTS " + name + " (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, idsong INT)"
         mycursor.execute(sql)
@@ -128,6 +151,9 @@ class DatabaseManager:
         db.commit()
 
     def insert_Log(self, db, desc):
+        """
+        This function is used to add logs into out database with current date
+        """
         mycursor = db.cursor()
         sql = "INSERT INTO logs (time, description) VALUES (%s, %s)"
         val = (datetime.now().strftime('%Y-%m-%d %H:%M:%S'), desc)

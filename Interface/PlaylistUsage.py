@@ -11,7 +11,7 @@ class playlistusage(wx.Frame):
         super().__init__(parent=None, title=nameplaylist + ' Songs', size=(550, 335))
         panel = wx.Panel(self)
 
-        # Will set the set of the interface
+        # This part is used to set a specified size on the interface
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
         self.ispaused = False
@@ -31,6 +31,7 @@ class playlistusage(wx.Frame):
         self.list_ctrl.InsertColumn(2, 'Album', width=150)
         self.list_ctrl.InsertColumn(3, 'Title', width=150)
 
+        # This part will populate our list with items
         self.index = 0
         for x in slist:
             self.list_ctrl.InsertItem(self.index, str(x[self.index][0]))

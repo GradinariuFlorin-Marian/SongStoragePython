@@ -11,7 +11,7 @@ class songs(wx.Frame):
         super().__init__(parent=None, title='Songs', size=(550, 335))
         panel = wx.Panel(self)
 
-        # Will set the set of the interface
+        # This part is used to set a specified size on the interface
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
         self.ispaused = False
@@ -31,6 +31,7 @@ class songs(wx.Frame):
         self.list_ctrl.InsertColumn(2, 'Album', width=150)
         self.list_ctrl.InsertColumn(3, 'Title', width=150)
 
+        # This part will populate our list with items
         self.index = 0
         for idV, artist, album, title in slist:
             self.list_ctrl.InsertItem(self.index, str(idV))
@@ -107,6 +108,9 @@ class songs(wx.Frame):
                 database.close()
 
     def stop_song(self, event):
+        """
+        This function will stop the song
+        """
         if self.list_ctrl.GetFocusedItem() != -1:
             mixer.music.pause()
             self.status.SetLabelText("Stopped")
@@ -116,11 +120,17 @@ class songs(wx.Frame):
             database.close()
 
     def buttonback(self, event):
+        """
+        This function is used to go back to main menu
+        """
         mixer.music.stop()
         self.Close()
         MainPage.InterfaceManager()
 
     def search(self, event):
+        """
+        This function will help the user to search for their song based on textBox value
+        """
         # Database operation to search value and add to logs that recording
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
@@ -139,6 +149,9 @@ class songs(wx.Frame):
             self.index += 1
 
     def reset(self, event):
+        """
+        Used to reset search result and to have back all the songs
+        """
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
         slist = db.get_songs(database)
@@ -156,6 +169,9 @@ class songs(wx.Frame):
             self.index += 1
 
     def next(self, event):
+        """
+        Used to go to the next song
+        """
         if self.list_ctrl.GetFocusedItem() != -1:
             if self.list_ctrl.GetFocusedItem() != (self.list_ctrl.GetItemCount() - 1):
                 self.list_ctrl.Focus(self.list_ctrl.GetFocusedItem() + 1)
@@ -164,6 +180,9 @@ class songs(wx.Frame):
                 self.play_song(event)
 
     def back(self, event):
+        """
+        Used to go back to the song before selected
+        """
         if self.list_ctrl.GetFocusedItem() != -1:
             if self.list_ctrl.GetFocusedItem() != 0:
                 self.list_ctrl.Focus(self.list_ctrl.GetFocusedItem() - 1)

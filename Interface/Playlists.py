@@ -11,7 +11,7 @@ class playlists(wx.Frame):
         super().__init__(parent=None, title='Playlists', size=(550, 335))
         panel = wx.Panel(self)
 
-        # Will set the set of the interface
+        # This part is used to set a specified size on the interface
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
 
@@ -90,6 +90,9 @@ class playlists(wx.Frame):
                                           self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem(), 1))
 
     def buttonback(self, event):
+        """
+        This function is used to go back to main menu
+        """
         self.Close()
         MainPage.InterfaceManager()
 

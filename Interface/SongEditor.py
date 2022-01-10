@@ -7,9 +7,10 @@ class songeditor(wx.Frame):
     def __init__(self, id, artistV, albumV, titleV):
         super().__init__(parent=None, title='Song Editor', size=(410, 360))
         panel = wx.Panel(self)
-
+        # This part is used to set a specified size on the interface
         self.SetMaxSize(wx.Size(410, 335))
         self.SetMinSize(wx.Size(410, 335))
+
         self.id=id
         wx.StaticText(self, -1, "Artist:", size=(50, 15), pos=(190, 20))
         self.tartist = wx.TextCtrl(self, size=(200, 23), pos=(120, 40))
@@ -43,6 +44,9 @@ class songeditor(wx.Frame):
         SongsManager.songsmanager()
 
     def buttonback(self, event):
+        """
+        This function is used to go back to song manager
+        """
         self.Close()
         SongsManager.songsmanager()
 
