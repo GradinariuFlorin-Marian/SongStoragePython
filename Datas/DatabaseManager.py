@@ -58,7 +58,6 @@ class DatabaseManager:
         mylist = []
         # This part will use all the id's found in playlists table and get the songs metadata's from the songs table
         for x in mycursor.fetchall():
-            print(str(x[0]) + " " + type + " " + value)
             mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id='" +
                              str(x[0]) + "' AND " + type + " LIKE '%" + value + "%'")
             # This part will filter empty lists
@@ -66,6 +65,14 @@ class DatabaseManager:
             if len(data) >= 1:
                 mylist.append(data)
         return mylist
+
+    def removesongfromallplaylists(self, db, idsong):
+        mycursor = db.cursor()
+
+        mycursor.execute("SELECT name FROM playlists")
+        for x in mycursor.fetchall():
+            mycursor.execute("DELETE FROM " + x[0] + " WHERE idsong=" + idsong)
+        db.commit()
 
     def get_path(self, db, idsong):
         """
@@ -119,6 +126,7 @@ class DatabaseManager:
         sql = "DELETE FROM songs WHERE id=" + idsong
         mycursor.execute(sql)
         db.commit()
+        self.removesongfromallplaylists(db, idsong)
 
     def update_song(self, db, artist, album, title, idsong):
         mycursor = db.cursor()
