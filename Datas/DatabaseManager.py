@@ -29,7 +29,7 @@ class DatabaseManager:
         return mydb
 
     def get_songs(self, db):
-        #Testat
+        # Testat
         mycursor = db.cursor()
 
         mycursor.execute("SELECT id, artist, album, title FROM songs")
@@ -44,7 +44,7 @@ class DatabaseManager:
         return mycursor.fetchall()
 
     def add_song(self, db, artist, album, title, path):
-        # Netestat
+        # Testat
         mycursor = db.cursor()
         sql = "INSERT INTO songs (artist, album, title, path) VALUES (%s, %s, %s, %s)"
         val = (artist, album, title, path)
@@ -52,9 +52,9 @@ class DatabaseManager:
         db.commit()
 
     def remove_song(self, db, id):
-        # Netestat
+        # Testat
         mycursor = db.cursor()
-        sql = "DELETE FROM songs WHERE id="+ id
+        sql = "DELETE FROM songs WHERE id=" + id
         val = id
         mycursor.execute(sql, val)
         db.commit()
@@ -68,20 +68,20 @@ class DatabaseManager:
         db.commit()
 
     def search_songs(self, db, title):
-        # Netestat
+        # Testat
         mycursor = db.cursor()
-        sql = "SELECT id FROM songs WHERE title LIKE '%%s%'"
-        val = title
-        mycursor.execute(sql, val)
-        db.commit()
+
+        mycursor.execute("SELECT id, artist, album, title FROM songs WHERE title LIKE '%" + title + "%'")
+
+        return mycursor.fetchall()
 
     def get_playlists(self, db):
-        #Testat
+        # Testat
         mycursor = db.cursor()
 
         mycursor.execute("SELECT * FROM playlists")
 
-        return mycursor.fetchall() #Result in tuple [0] [1] [2]
+        return mycursor.fetchall()  # Result in tuple [0] [1] [2]
 
     def update_playlist(self, db, oldname, name, description):
         # Testat

@@ -1,7 +1,6 @@
 import wx
-from tkinter import *
-from tkinter import filedialog
-import eyed3
+from eyed3 import id3
+from eyed3 import load
 from Interface import MainPage
 from Interface import SongEditor
 from Datas import DatabaseManager
@@ -32,14 +31,14 @@ class songsmanager(wx.Frame):
         self.list_ctrl.InsertColumn(3, 'Title', width=150)
 
         items = slist
-        index = 0
+        self.index = 0
         for idV, artist, album, title in items:
-            self.list_ctrl.InsertItem(index, str(idV))
-            self.list_ctrl.SetItem(index, 1, artist)
-            self.list_ctrl.SetItem(index, 2, album)
-            self.list_ctrl.SetItem(index, 3, title)
-            self.list_ctrl.SetItemData(index, idV)
-            index += 1
+            self.list_ctrl.InsertItem(self.index, str(idV))
+            self.list_ctrl.SetItem(self.index, 1, str(artist))
+            self.list_ctrl.SetItem(self.index, 2, str(album))
+            self.list_ctrl.SetItem(self.index, 3, str(title))
+            self.list_ctrl.SetItemData(self.index, idV)
+            self.index += 1
 
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -60,12 +59,24 @@ class songsmanager(wx.Frame):
         self.Show()
 
     def buttonadd(self, event):
-        root = Tk()
-
-        root.filename = filedialog.askopenfilename(initialdir="/", title="Select file")
-        print(root.filename)
-
-        root.mainloop()
+        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
+        dialog = wx.FileDialog(None, 'Open', style=style)  # adauga wildcard pt tag-uri .mp3 .wav etc
+        if dialog.ShowModal() == wx.ID_OK:
+            path = dialog.GetPath()
+            db = DatabaseManager.DatabaseManager()
+            database = db.connect_database()
+            tag = id3.Tag()
+            tag.parse(path)
+            # a = load(path) tag-uri speciale
+            db.add_song(database, tag.artist, tag.album, tag.title, path)
+            database.close()
+            # self.list_ctrl.InsertItem(self.index, str(idV))
+            # self.list_ctrl.SetItem(self.index, 1, tag.artist)
+            # self.list_ctrl.SetItem(self.index, 2, tag.album)
+            # self.list_ctrl.SetItem(self.index, 3, tag.title)
+            # self.list_ctrl.SetItemData(self.index, idV)
+            # self.index += 1
+        dialog.Destroy()
 
     def buttonremove(self, event):
         if self.list_ctrl.GetFocusedItem() != -1:

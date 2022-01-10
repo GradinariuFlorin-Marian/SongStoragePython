@@ -1,25 +1,26 @@
 import wx
 import eyed3
+from pygame import mixer
 from Interface import MainPage
 from Datas import DatabaseManager
 
 
 class songs(wx.Frame):
+    mixer.init()
+
     def __init__(self):
         super().__init__(parent=None, title='Songs', size=(550, 335))
         panel = wx.Panel(self)
 
-         # Will set the set of the interface
+        # Will set the set of the interface
         self.SetMaxSize(wx.Size(550, 335))
         self.SetMinSize(wx.Size(550, 335))
-        my_sizer = wx.BoxSizer(wx.VERTICAL)
-
+        self.ispaused = False
         my_sizer = wx.BoxSizer(wx.VERTICAL)
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
         slist = db.get_songs(database)
         database.close()
-
         self.list_ctrl = wx.ListCtrl(
             self, size=(550, 150),
             style=wx.LC_REPORT | wx.BORDER_SUNKEN
@@ -29,15 +30,14 @@ class songs(wx.Frame):
         self.list_ctrl.InsertColumn(2, 'Album', width=150)
         self.list_ctrl.InsertColumn(3, 'Title', width=150)
 
-        items = slist
-        index = 0
-        for idV, artist, album, title in items:
-            self.list_ctrl.InsertItem(index, str(idV))
-            self.list_ctrl.SetItem(index, 1, artist)
-            self.list_ctrl.SetItem(index, 2, album)
-            self.list_ctrl.SetItem(index, 3, title)
-            self.list_ctrl.SetItemData(index, idV)
-            index += 1
+        self.index = 0
+        for idV, artist, album, title in slist:
+            self.list_ctrl.InsertItem(self.index, str(idV))
+            self.list_ctrl.SetItem(self.index, 1, str(artist))
+            self.list_ctrl.SetItem(self.index, 2, str(album))
+            self.list_ctrl.SetItem(self.index, 3, str(title))
+            self.list_ctrl.SetItemData(self.index, idV)
+            self.index += 1
 
         my_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
@@ -48,25 +48,28 @@ class songs(wx.Frame):
         addsong.Bind(wx.EVT_BUTTON, self.play_song)
 
         edit = wx.Button(self, label='⏸', size=(40, 15), pos=(230, 180))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        edit.Bind(wx.EVT_BUTTON, self.pause_song)
 
         edit = wx.Button(self, label='⏹', size=(40, 15), pos=(300, 180))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        edit.Bind(wx.EVT_BUTTON, self.stop_song)
 
         lastsong = wx.Button(self, label='Next', size=(50, 15), pos=(370, 180))
-        lastsong.Bind(wx.EVT_BUTTON, self.on_edit)
+        lastsong.Bind(wx.EVT_BUTTON, self.next)
 
         back = wx.Button(self, label='Back', size=(80, 15), pos=(210, 260))
         back.Bind(wx.EVT_BUTTON, self.buttonback)
 
         edit = wx.Button(self, label='Search', size=(60, 15), pos=(290, 220))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        edit.Bind(wx.EVT_BUTTON, self.search)
 
         edit = wx.Button(self, label='Reset', size=(60, 15), pos=(365, 220))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        edit.Bind(wx.EVT_BUTTON, self.reset)
 
-        edit = wx.TextCtrl(self, size=(200, 20), pos=(80, 217))
-        edit.Bind(wx.EVT_BUTTON, self.on_edit)
+        self.textBox = wx.TextCtrl(self, size=(200, 20), pos=(80, 217))
+        wx.StaticText(self, -1, "Status:", size=(50, 15), pos=(450, 175))
+        self.status = wx.StaticText(self, -1, "Choosing", size=(50, 15), pos=(440, 195))
+        font = wx.Font(18, wx.ROMAN, wx.SLANT, wx.LIGHT)
+        self.status.SetFont(font)
 
         panel.SetSizer(my_sizer)
         self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
@@ -75,20 +78,76 @@ class songs(wx.Frame):
     def on_edit(self, event):
         print('in on_edit')
 
-    def update_mp3_listing(self, folder_path):
-        print(folder_path)
-
     def play_song(self, event):
         if self.list_ctrl.GetFocusedItem() != -1:
             db = DatabaseManager.DatabaseManager()
             database = db.connect_database()
             path = db.get_path(database, self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem()))
             database.close()
-            print(path[0][0])
+            mixer.music.load(path[0][0])
+            # AddSongStatus
+            mixer.music.play()
+            self.status.SetLabelText("Playing")
+
+    def pause_song(self, event):
+        if self.list_ctrl.GetFocusedItem() != -1:
+            if self.ispaused:
+                mixer.music.unpause()
+                self.ispaused = False
+                self.status.SetLabelText("Playing")
+            else:
+                mixer.music.pause()
+                self.ispaused = True
+                self.status.SetLabelText("Paused")
+
+    def stop_song(self, event):
+        if self.list_ctrl.GetFocusedItem() != -1:
+            mixer.music.pause()
+            self.status.SetLabelText("Stopped")
 
     def buttonback(self, event):
+        mixer.music.stop()
         self.Close()
         MainPage.InterfaceManager()
+
+    def search(self, event):
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        slist = db.search_songs(database, self.textBox.GetValue())
+        database.close()
+        self.list_ctrl.DeleteAllItems()
+        self.index = 0
+        for idV, artist, album, title in slist:
+            self.list_ctrl.InsertItem(self.index, str(idV))
+            self.list_ctrl.SetItem(self.index, 1, str(artist))
+            self.list_ctrl.SetItem(self.index, 2, str(album))
+            self.list_ctrl.SetItem(self.index, 3, str(title))
+            self.list_ctrl.SetItemData(self.index, idV)
+            self.index += 1
+
+    def reset(self, event):
+        db = DatabaseManager.DatabaseManager()
+        database = db.connect_database()
+        slist = db.get_songs(database)
+        database.close()
+        self.list_ctrl.DeleteAllItems()
+        self.textBox.SetValue("")
+        self.index = 0
+        for idV, artist, album, title in slist:
+            self.list_ctrl.InsertItem(self.index, str(idV))
+            self.list_ctrl.SetItem(self.index, 1, str(artist))
+            self.list_ctrl.SetItem(self.index, 2, str(album))
+            self.list_ctrl.SetItem(self.index, 3, str(title))
+            self.list_ctrl.SetItemData(self.index, idV)
+            self.index += 1
+
+    def next(self, event):
+        if self.list_ctrl.GetFocusedItem() != -1:
+            # print(self.list_ctrl.GetCount())
+            self.list_ctrl.Focus(1)
+            self.list_ctrl.Select(1)
+            # print(self.list_ctrl.GetFocusedItem())
+            # self.list_ctrl.Focus(self.list_ctrl.GetNextSelected(self.list_ctrl.GetFocusedItem()))
 
     def OnEraseBackground(self, evt):
         """

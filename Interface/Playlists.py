@@ -1,5 +1,4 @@
 import wx
-import sys
 from Interface import MainPage
 from Interface import PlaylistCreator
 from Interface import PlaylistEditor
@@ -60,8 +59,8 @@ class playlists(wx.Frame):
         print(folder_path)
 
     def buttonadd(self, event):
-         self.Close()
-         PlaylistCreator.playlistcreator()
+        self.Close()
+        PlaylistCreator.playlistcreator()
 
     def buttonremove(self, event):
         if self.list_ctrl.GetFocusedItem() != -1:
@@ -77,7 +76,7 @@ class playlists(wx.Frame):
         print(item2)
 
     def buttonedit(self, event):
-        #Termina descriptia
+        # Termina descriptia
         if self.list_ctrl.GetFocusedItem() != -1:
             self.Close()
             PlaylistEditor.playlisteditor(self.list_ctrl.GetItemText(self.list_ctrl.GetFocusedItem()),
