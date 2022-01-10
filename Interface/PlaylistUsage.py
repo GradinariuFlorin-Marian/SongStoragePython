@@ -57,7 +57,7 @@ class playlistusage(wx.Frame):
         edit = wx.Button(self, label='⏹', size=(40, 15), pos=(300, 180))
         edit.Bind(wx.EVT_BUTTON, self.stop_song)
 
-        lastsong = wx.Button(self, label='Remove', size=(50, 15), pos=(370, 180))
+        lastsong = wx.Button(self, label='Remove', size=(70, 15), pos=(360, 180))
         lastsong.Bind(wx.EVT_BUTTON, self.remove)
 
         back = wx.Button(self, label='Back', size=(80, 15), pos=(210, 260))
@@ -68,6 +68,8 @@ class playlistusage(wx.Frame):
 
         edit = wx.Button(self, label='Reset', size=(60, 15), pos=(365, 220))
         edit.Bind(wx.EVT_BUTTON, self.reset)
+
+        self.combo = wx.ComboBox(self, choices=['artist', 'album', 'title'], size=(60, 25), pos=(15, 215), style=wx.CB_READONLY)
 
         self.textBox = wx.TextCtrl(self, size=(200, 20), pos=(80, 217))
         wx.StaticText(self, -1, "Status:", size=(50, 15), pos=(450, 175))
@@ -116,7 +118,7 @@ class playlistusage(wx.Frame):
         # Database operation to search value and add to logs that recording
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
-        slist = db.search_songsplaylist(database, self.pname, self.textBox.GetValue())
+        slist = db.search_songsplaylist(database, self.pname, self.combo.GetValue(), self.textBox.GetValue())
         db.insert_Log(database, "Searched in playlist " + self.pname + ": " + self.textBox.GetValue())
         database.close()
         self.list_ctrl.DeleteAllItems()

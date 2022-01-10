@@ -47,7 +47,7 @@ class DatabaseManager:
 
         return mylist
 
-    def search_songsplaylist(self, db, playlistname, value):
+    def search_songsplaylist(self, db, playlistname, type, value):
         """
         This function is used to get from the database based on a criteria the songs in a playlist
         """
@@ -59,7 +59,7 @@ class DatabaseManager:
         # This part will use all the id's found in playlists table and get the songs metadata's from the songs table
         for x in mycursor.fetchall():
             mycursor.execute("SELECT id, artist, album, title FROM songs WHERE id=" + str(
-                x[0]) + " AND title LIKE '%" + value + "%'")
+                x[0]) + " AND " + type + " LIKE '%" + value + "%'")
             mylist.append(mycursor.fetchall())
 
         return mylist
@@ -124,10 +124,10 @@ class DatabaseManager:
         mycursor.execute(sql, val)
         db.commit()
 
-    def search_songs(self, db, title):
+    def search_songs(self, db, type, value):
         mycursor = db.cursor()
 
-        mycursor.execute("SELECT id, artist, album, title FROM songs WHERE title LIKE '%" + title + "%'")
+        mycursor.execute("SELECT id, artist, album, title FROM songs WHERE " + type + " LIKE '%" + value + "%'")
 
         return mycursor.fetchall()
 

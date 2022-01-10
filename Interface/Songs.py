@@ -67,6 +67,8 @@ class songs(wx.Frame):
         edit = wx.Button(self, label='Reset', size=(60, 15), pos=(365, 220))
         edit.Bind(wx.EVT_BUTTON, self.reset)
 
+        self.combo = wx.ComboBox(self, choices=['artist', 'album', 'title'], size=(60, 25), pos=(15, 215), style=wx.CB_READONLY)
+
         self.textBox = wx.TextCtrl(self, size=(200, 20), pos=(80, 217))
         wx.StaticText(self, -1, "Status:", size=(50, 15), pos=(450, 175))
         self.status = wx.StaticText(self, -1, "Choosing", size=(50, 15), pos=(440, 195))
@@ -134,7 +136,7 @@ class songs(wx.Frame):
         # Database operation to search value and add to logs that recording
         db = DatabaseManager.DatabaseManager()
         database = db.connect_database()
-        slist = db.search_songs(database, self.textBox.GetValue())
+        slist = db.search_songs(database, self.combo.GetValue(), self.textBox.GetValue())
         db.insert_Log(database, "Searched " + self.textBox.GetValue())
         database.close()
         self.list_ctrl.DeleteAllItems()
